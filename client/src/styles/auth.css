@@ -1,0 +1,207 @@
+/* ────────────────────────────────────────────
+   auth.css  –  Login & Register shared styles
+   Uses CSS variables from index.css
+──────────────────────────────────────────── */
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+/* ── Card ── */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 40px 32px;
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+}
+
+/* ── Header ── */
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-logo {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.auth-title {
+  font-size: 28px !important;
+  letter-spacing: -0.5px !important;
+  margin: 0 0 6px !important;
+}
+
+.auth-subtitle {
+  color: var(--text);
+  font-size: 15px;
+  margin: 0;
+}
+
+/* ── Form ── */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+}
+
+.form-field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.form-field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+  direction: ltr;
+  text-align: left;
+}
+
+.form-field input::placeholder {
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.form-field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.form-field input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-field input.input-error {
+  border-color: #e05252;
+}
+
+.form-field input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(224, 82, 82, 0.15);
+}
+
+/* ── Field-level error ── */
+.field-error {
+  font-size: 13px;
+  color: #e05252;
+  text-align: right;
+}
+
+/* ── Server / global error banner ── */
+.auth-error {
+  background: rgba(224, 82, 82, 0.1);
+  border: 1px solid rgba(224, 82, 82, 0.4);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #e05252;
+  text-align: center;
+}
+
+/* ── Submit button ── */
+.auth-btn {
+  width: 100%;
+  padding: 11px;
+  margin-top: 4px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.auth-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.auth-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.auth-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Loading spinner ── */
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Footer switch link ── */
+.auth-switch {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text);
+  margin: 0;
+}
+
+.auth-switch a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 28px 20px 24px;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    max-width: 100%;
+    box-shadow: none;
+  }
+
+  .auth-title {
+    font-size: 24px !important;
+  }
+}

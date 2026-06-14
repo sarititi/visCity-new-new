@@ -1,0 +1,426 @@
+/* ============================================================
+   FAVORITES PAGE – "המועדפים שלי" + תיקיות
+   נסמך על משתני העיצוב של --places-* (מוגדרים ב-places.css)
+   עם ערכי גיבוי לכל מקרה.
+   ============================================================ */
+
+.favorites-page {
+  direction: rtl;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--places-text, #1a1a1a);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.favorites-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+}
+
+.favorites-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--places-text, #1a1a1a);
+}
+
+.favorites-header .muted {
+  color: var(--places-text-muted, #6b7280);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+.fav-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--places-bg, #f7f8fa);
+  border: 1px dashed var(--places-border-strong, rgba(0, 0, 0, 0.18));
+  border-radius: var(--places-radius-lg, 16px);
+  color: var(--places-text-muted, #6b7280);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fav-empty p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.fav-empty--inline {
+  padding: 2rem;
+  font-size: 0.9rem;
+}
+
+/* ── Layout: sidebar + content ──────────────────────────── */
+.favorites-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .favorites-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.fav-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: var(--places-surface, #fff);
+  border: 1px solid var(--places-border, rgba(0, 0, 0, 0.1));
+  border-radius: var(--places-radius-lg, 16px);
+  padding: 0.85rem;
+  box-shadow: var(--places-shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+  position: sticky;
+  top: 1rem;
+}
+
+@media (max-width: 860px) {
+  .fav-sidebar {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .fav-sidebar__divider {
+    display: none;
+  }
+
+  .fav-folder-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .fav-folder-create,
+  .fav-add-folder-btn {
+    width: 100%;
+  }
+}
+
+.fav-sidebar__divider {
+  height: 1px;
+  background: var(--places-border, rgba(0, 0, 0, 0.1));
+  margin: 0.35rem 0;
+}
+
+/* ── Folder items (buttons / rows) ──────────────────────── */
+.fav-folder-item,
+.fav-folder-item__main {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: var(--places-text, #1a1a1a);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: right;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--places-radius-md, 10px);
+  cursor: pointer;
+  transition: var(--places-transition, all 0.18s ease);
+}
+
+.fav-folder-item:hover,
+.fav-folder-item__main:hover {
+  background: var(--places-accent-light, #e1f5ee);
+}
+
+.fav-folder-item--active,
+.fav-folder-row--active .fav-folder-item__main {
+  background: var(--places-accent-light, #e1f5ee);
+  border-color: var(--places-accent, #1d9e75);
+  color: var(--places-accent-dark, #0f6e56);
+}
+
+.fav-folder-item--dragover,
+.fav-folder-row--dragover {
+  border-color: var(--places-accent, #1d9e75);
+  background: var(--places-accent-light, #e1f5ee);
+  box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.18);
+}
+
+.fav-folder-item__icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.fav-folder-item__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fav-folder-item__count {
+  font-size: 0.75rem;
+  color: var(--places-text-muted, #6b7280);
+  background: var(--places-bg, #f7f8fa);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  flex-shrink: 0;
+}
+
+/* ── Custom folder rows (with rename/delete) ────────────── */
+.fav-folder-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fav-folder-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--places-radius-md, 10px);
+  border: 1.5px solid transparent;
+  transition: var(--places-transition, all 0.18s ease);
+}
+
+.fav-folder-row .fav-folder-item__main {
+  padding: 0.55rem 0.7rem;
+}
+
+.fav-folder-row__actions {
+  display: flex;
+  gap: 0.15rem;
+  padding-left: 0.35rem;
+  flex-shrink: 0;
+}
+
+.fav-folder-action {
+  background: transparent;
+  border: none;
+  border-radius: var(--places-radius-sm, 6px);
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.35rem;
+  cursor: pointer;
+  transition: var(--places-transition, all 0.18s ease);
+}
+
+.fav-folder-action:hover {
+  background: var(--places-bg, #f7f8fa);
+}
+
+.fav-folder-action--danger:hover {
+  background: var(--places-danger-light, #fcebeb);
+}
+
+.fav-folder-rename {
+  flex: 1;
+}
+
+.fav-folder-rename input {
+  width: 100%;
+  border: 1.5px solid var(--places-accent, #1d9e75);
+  border-radius: var(--places-radius-sm, 6px);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  direction: rtl;
+}
+
+/* ── Create folder ───────────────────────────────────────── */
+.fav-add-folder-btn {
+  margin-top: 0.25rem;
+  background: var(--places-bg, #f7f8fa);
+  border: 1.5px dashed var(--places-border-strong, rgba(0, 0, 0, 0.18));
+  border-radius: var(--places-radius-md, 10px);
+  color: var(--places-text-muted, #6b7280);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  transition: var(--places-transition, all 0.18s ease);
+}
+
+.fav-add-folder-btn:hover {
+  border-color: var(--places-accent, #1d9e75);
+  color: var(--places-accent-dark, #0f6e56);
+  background: var(--places-accent-light, #e1f5ee);
+}
+
+.fav-folder-create {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.fav-folder-create input {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid var(--places-border-strong, rgba(0, 0, 0, 0.18));
+  border-radius: var(--places-radius-sm, 6px);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  direction: rtl;
+  outline: none;
+}
+
+.fav-folder-create input:focus {
+  border-color: var(--places-accent, #1d9e75);
+}
+
+.fav-folder-create__btn {
+  background: var(--places-accent, #1d9e75);
+  color: #fff;
+  border: none;
+  border-radius: var(--places-radius-sm, 6px);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--places-transition, all 0.18s ease);
+}
+
+.fav-folder-create__btn:hover {
+  background: var(--places-accent-dark, #0f6e56);
+}
+
+/* ── Content / Grid ──────────────────────────────────────── */
+.favorites-content {
+  min-height: 200px;
+}
+
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ── Favorite place card ────────────────────────────────── */
+.fav-place-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--places-surface, #fff);
+  border: 1px solid var(--places-border, rgba(0, 0, 0, 0.1));
+  border-radius: var(--places-radius-lg, 16px);
+  overflow: hidden;
+  box-shadow: var(--places-shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+  transition: var(--places-transition, all 0.18s ease);
+  cursor: grab;
+}
+
+.fav-place-card:active {
+  cursor: grabbing;
+}
+
+.fav-place-card:hover {
+  box-shadow: var(--places-shadow-md, 0 4px 16px rgba(0,0,0,0.08));
+  transform: translateY(-2px);
+}
+
+.fav-place-card__media {
+  display: block;
+  width: 100%;
+  height: 140px;
+  background: var(--places-accent-light, #e1f5ee);
+  overflow: hidden;
+}
+
+.fav-place-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.fav-place-card:hover .fav-place-card__media img {
+  transform: scale(1.05);
+}
+
+.fav-place-card__emoji {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+}
+
+.fav-place-card__body {
+  padding: 0.85rem 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fav-place-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--places-text, #1a1a1a);
+  text-decoration: none;
+}
+
+.fav-place-card__title:hover {
+  color: var(--places-accent, #1d9e75);
+}
+
+.fav-place-card__desc {
+  font-size: 0.8rem;
+  color: var(--places-text-muted, #6b7280);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.fav-place-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem 0.85rem;
+  border-top: 1px solid var(--places-border, rgba(0, 0, 0, 0.1));
+  margin-top: 0.5rem;
+}
+
+.fav-place-card__drag-hint {
+  font-size: 0.7rem;
+  color: var(--places-text-light, #9ca3af);
+  white-space: nowrap;
+}
+
+.fav-folder-select {
+  flex: 1;
+  min-width: 0;
+  max-width: 140px;
+  border: 1.5px solid var(--places-border-strong, rgba(0, 0, 0, 0.18));
+  border-radius: var(--places-radius-sm, 6px);
+  padding: 0.3rem 0.4rem;
+  font-size: 0.75rem;
+  font-family: inherit;
+  color: var(--places-text, #1a1a1a);
+  background: var(--places-surface, #fff);
+  direction: rtl;
+  cursor: pointer;
+}
+
+.fav-folder-select:focus {
+  outline: none;
+  border-color: var(--places-accent, #1d9e75);
+}

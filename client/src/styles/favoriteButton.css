@@ -1,0 +1,134 @@
+/* ============================================================
+   FAVORITE BUTTON – כפתור לב למועדפים (גנרי)
+   נסמך על משתני העיצוב של --places-* (מוגדרים ב-places.css)
+   עם ערכי גיבוי, כדי שיעבוד גם אם נטען בעמוד שאינו טוען places.css.
+   ============================================================ */
+
+.favorite-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  flex-shrink: 0;
+  border: 1.5px solid var(--places-border-strong, rgba(0, 0, 0, 0.18));
+  background: var(--places-surface, #ffffff);
+  color: var(--places-text-light, #9ca3af);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--places-transition, all 0.18s ease);
+}
+
+.favorite-btn:hover {
+  color: #e11d48;
+  border-color: #fecdd3;
+  transform: scale(1.06);
+}
+
+.favorite-btn:active {
+  transform: scale(0.94);
+}
+
+.favorite-btn--active {
+  color: #e11d48;
+  border-color: #fecdd3;
+  background: #fff5f6;
+}
+
+.favorite-btn__icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: transform 0.18s ease, fill 0.18s ease;
+}
+
+.favorite-btn--active .favorite-btn__icon {
+  fill: currentColor;
+}
+
+.favorite-btn:active .favorite-btn__icon {
+  transform: scale(0.82);
+}
+
+/* ── גדלים ───────────────────────────────────────────────── */
+.favorite-btn--sm {
+  width: 34px;
+  height: 34px;
+}
+
+.favorite-btn--sm .favorite-btn__icon {
+  width: 17px;
+  height: 17px;
+}
+
+/* lg – עם תווית טקסט, לעמוד הפוסט המלא */
+.favorite-btn--lg {
+  width: auto;
+  height: auto;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--places-radius-md, 10px);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.favorite-btn--lg .favorite-btn__icon {
+  width: 19px;
+  height: 19px;
+}
+
+.favorite-btn__label {
+  line-height: 1;
+}
+
+/* ── מיקום מעל תמונת כרטיס (overlay) ────────────────────────── */
+.favorite-btn--overlay {
+  position: absolute;
+  top: 0.65rem;
+  left: 0.65rem;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(2px);
+}
+
+/* ── טולטיפ בריחוף ("הוסף למועדפים") ───────────────────────── */
+.favorite-btn__tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 6;
+}
+
+.favorite-btn__tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(17, 24, 39, 0.92);
+}
+
+.favorite-btn:hover .favorite-btn__tooltip,
+.favorite-btn:focus-visible .favorite-btn__tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
