@@ -22,7 +22,12 @@ export const authenticateToken = (req, res, next) => {
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(NO_TOKEN.status).json({ error: NO_TOKEN.message });
 
-        req.user = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET);
+        if (decoded.id === undefined) {
+            return res.status(INVALID_TOKEN.status).json({ error: INVALID_TOKEN.message });
+        }
+
+        req.user = decoded;
         next();
     } catch (err) {
         if (err.name === 'TokenExpiredError')
