@@ -79,7 +79,7 @@ INSERT INTO review_helpful (review_id, user_id, vote) VALUES
 -- 8. MEDIA (תמונות - הוספתי קישורים גנריים כהכנה שתוכלי להעלות משלך)
 ----------------------------------------------------
 INSERT INTO media (media_id, place_id, user_id, media_type, media_url) VALUES
-(1, 1, 1, 'image', 'https://images.unsplash.com/photo-1433086966358-54859d0ed716'), -- תמונת טבע כללית לבניאס/דן
-(2, 2, 2, 'image', 'https://images.unsplash.com/photo-1444464666168-49b19e882a47'), -- תמונת ציפורים לאגמון
-(3, 6, 3, 'image', 'https://images.unsplash.com/photo-1544198365-f5d60b6d8190'), -- תמונת נוף מדברי
-(4, 7, 4, 'video', 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'); -- סרטון וידאו לדוגמה למכתש
+(1, 3, 2, 'image', 'http://localhost:3000/uploads/rosh-hanikra1.jpg'),
+(2, 3, 2, 'image', 'http://localhost:3000/uploads/rosh_hanikra_2.jpg'),
+(3, 3, 2, 'image', 'http://localhost:3000/uploads/rosh_hanikra_3.jpg');
+-- (4, 7, 4, 'video', '/uploads/dan-nature.jpg'); -- סרטון וידאו לדוגמה למכתש
