@@ -3,7 +3,7 @@ import { postPlace, fetchPlaces, fetchPlaceById, putPlace, deletePlace } from '.
 import reviewRoutes from './reviewRoute.js';
 import mediaRoutes from './mediaRoute.js';
 import { authenticateToken, authorizeOwnership } from '../middleWare/authMiddleware.js';
-import { getPlaceById } from '../models/PlaceModel.js';
+import {getPlaceForAuthorization} from '../services/PlaceService.js';
 
 const router = express.Router();
 
@@ -12,20 +12,20 @@ router.get('/:id', fetchPlaceById);
 router.post('/', authenticateToken, postPlace);
 router.put('/:id', authenticateToken, 
     authorizeOwnership({
-		getById: getPlaceById,
-		paramName: 'id',
-		ownerField: 'created_by',
-	}),
-	putPlace
+        getById: getPlaceForAuthorization,
+        paramName: 'id',
+        ownerField: 'created_by',
+    }),
+    putPlace
 );
 
 router.delete('/:id', authenticateToken,
-	authorizeOwnership({
-		getById: getPlaceById,
-		paramName: 'id',
-		ownerField: 'created_by',
-	}),
-	deletePlace
+    authorizeOwnership({
+        getById: getPlaceForAuthorization,
+        paramName: 'id',
+        ownerField: 'created_by',
+    }),
+    deletePlace
 );
 
 router.use('/:placeId/reviews', reviewRoutes);
@@ -34,3 +34,4 @@ router.use('/:placeId/media', mediaRoutes);
 
 
 export default router;
+
