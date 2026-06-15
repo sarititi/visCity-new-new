@@ -12,10 +12,10 @@ import {
 
 const SECRET = process.env.JWT_SECRET;
 
-const ROLE_HIERARCHY = {
-    'user': 1,
-    'admin': 3
-};
+// const ROLE_HIERARCHY = {
+//     'user': 1,
+//     'admin': 2
+// };
 
 export const authenticateToken = (req, res, next) => {
     try {
@@ -35,27 +35,49 @@ export const authenticateToken = (req, res, next) => {
         if (err.name === 'JsonWebTokenError')
             return res.status(INVALID_TOKEN.status).json({ error: INVALID_TOKEN.message });
 
-        res.status(INTERNAL_SERVER_ERROR.status).json({ error: INTERNAL_SERVER_ERROR.message });
+        res.status(INTERNAL_SERVER_ERROR.status).json({ error: INTERNAL_SERVER_ERROR.message });//500
     }
 };
 
+// export const requireRole = (role) => (req, res, next) => {
+//     try {
+//         if (!req.user) return res.status(ACCESS_DENIED.status).json({ error: ACCESS_DENIED.message });
+
+//         // Special-case: treat the account with username 'admin1' as administrator
+//         // if (req.user.username === 'admin1') 
+//         if (req.user.role === 'admin') return next();
+//         const requiredLevel = ROLE_HIERARCHY[role];
+//         const userLevel = ROLE_HIERARCHY[req.user.role];
+
+//         if (!userLevel || userLevel < requiredLevel) {
+//             return res.status(INSUFFICIENT_PERMISSIONS.status).json({ error: INSUFFICIENT_PERMISSIONS.message });
+//         }
+
+//         next();
+//     } catch (err) {
+//         res.status(INTERNAL_SERVER_ERROR.status).json({ error: INTERNAL_SERVER_ERROR.message });
+//     }
+// };
 export const requireRole = (role) => (req, res, next) => {
     try {
-        if (!req.user) return res.status(ACCESS_DENIED.status).json({ error: ACCESS_DENIED.message });
-
-        // Special-case: treat the account with username 'admin1' as administrator
-        // if (req.user.username === 'admin1') 
-        if (req.user.role === 'admin') return next();
-        const requiredLevel = ROLE_HIERARCHY[role];
-        const userLevel = ROLE_HIERARCHY[req.user.role];
-
-        if (!userLevel || userLevel < requiredLevel) {
-            return res.status(INSUFFICIENT_PERMISSIONS.status).json({ error: INSUFFICIENT_PERMISSIONS.message });
+        if (!req.user) {
+            return res
+                .status(ACCESS_DENIED.status)
+                .json({ error: ACCESS_DENIED.message });
         }
 
-        next();
+        if (req.user.role === role || req.user.role === 'admin') {
+            return next();
+        }
+
+        return res
+            .status(INSUFFICIENT_PERMISSIONS.status)
+            .json({ error: INSUFFICIENT_PERMISSIONS.message });
+
     } catch (err) {
-        res.status(INTERNAL_SERVER_ERROR.status).json({ error: INTERNAL_SERVER_ERROR.message });
+        return res
+            .status(INTERNAL_SERVER_ERROR.status)
+            .json({ error: INTERNAL_SERVER_ERROR.message });
     }
 };
 

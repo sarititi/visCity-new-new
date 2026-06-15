@@ -14,7 +14,6 @@ export const getPlaces = async ({ page = 1, limit = 20, search = '', category = 
     data.places = data.places.map(place => ({
       ...place,
       created_by: place.created_by_id || place.created_by,
-      // המרת latitude/longitude ל-Number עבור מפת Google
       latitude: place.latitude != null ? Number(place.latitude) : null,
       longitude: place.longitude != null ? Number(place.longitude) : null,
     }));

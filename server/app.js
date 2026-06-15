@@ -11,13 +11,6 @@ import itineraryRoutes from './routes/itineraryRoute.js';
 import { initSocket } from './services/socketManager.js';
 import { ROUTE_NOT_FOUND, INTERNAL_SERVER_ERROR, STALE_SESSION } from './const/errorConst.js';
 
-
-//אני מייבאת מהראוט את המודל לשים לב אם זה צריך לעבור דרך הסרוויס
-//ליצור אודיו ולבדוק את המדיה
-//בנבבר למחוק את האופציה של אדמין 1 - להגדיר ישירות בDB את האדמין עם רול אדמין
-//סינונים
-//מפות חיות
-
 const app = express();
 const httpServer = createServer(app);
 
@@ -46,8 +39,6 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
     console.error(err.stack);
 
-    // שגיאות "מוכרות" שנזרקות בכוונה מהשירותים/הקונטרולרים מגיעות עם status
-    // ועם הודעה בטוחה להצגה למשתמש.
     if (err.status) {
         return res.status(err.status).json({ error: err.message });
     }
