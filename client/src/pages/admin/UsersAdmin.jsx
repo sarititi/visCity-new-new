@@ -81,100 +81,338 @@ export default function UsersAdmin() {
   };
 
   if (!user) return null;
-if (user.role !== 'admin' && user.user_type !== 'admin') return <div style={{textAlign: 'center', marginTop: '50px'}}>אין הרשאה לפאנל זה</div>;
-  return (
-    <div className="page-wrap">
-      <h2>ניהול משתמשים</h2>
-      {error && <div className="error">{error}</div>}
-      {loading ? (
-        <div>טוען...</div>
-      ) : (
-        <table className="places-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Connected</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id}>
-                <td>{u.id}</td>
-                <td>
-                  {editId === u.id ? (
-                    <input value={editFields.username} onChange={(e) => setEditFields((s) => ({ ...s, username: e.target.value }))} />
-                  ) : (
-                    u.username
-                  )}
-                </td>
-                <td>
-                  {editId === u.id ? (
-                    <input value={editFields.email} onChange={(e) => setEditFields((s) => ({ ...s, email: e.target.value }))} />
-                  ) : (
-                    u.email
-                  )}
-                </td>
-                <td>
-                  {editId === u.id ? (
-                    <select value={editFields.role} onChange={(e) => setEditFields((s) => ({ ...s, role: e.target.value }))}>
-                      <option value="user">user</option>
-                      <option value="admin">admin</option>
-                    </select>
-                  ) : (
-                    u.role
-                  )}
-                </td>
-                <td>{online.includes(u.id) ? '🔵 מחובר' : '—'}</td>
-                <td>
-                  {editId === u.id ? (
-                    <>
-                      <button onClick={() => saveEdit(u.id)}>שמור</button>
-                      <button onClick={cancelEdit}>ביטול</button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={() => startEdit(u)}>ערוך</button>
-                      {user.id !== u.id && (
-                        <button className="danger" onClick={() => handleDelete(u.id)}>מחק</button>
-                      )}
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      
-      <div style={{ marginTop: 20 }}>
-        <h3>יצירת משתמש חדש</h3>
-        <form onSubmit={handleCreate} className="auth-form">
-          <div className="form-field">
-            <label>Username</label>
-            <input value={createFields.username} onChange={(e) => setCreateFields((s) => ({ ...s, username: e.target.value }))} required />
-          </div>
-          <div className="form-field">
-            <label>Email</label>
-            <input type="email" value={createFields.email} onChange={(e) => setCreateFields((s) => ({ ...s, email: e.target.value }))} required />
-          </div>
-          <div className="form-field">
-            <label>Password</label>
-            <input type="password" value={createFields.password} onChange={(e) => setCreateFields((s) => ({ ...s, password: e.target.value }))} required />
-          </div>
-          <div className="form-field">
-            <label>Role</label>
-            <select value={createFields.role} onChange={(e) => setCreateFields((s) => ({ ...s, role: e.target.value }))}>
-              <option value="user">user</option>
-              <option value="admin">admin</option>
-            </select>
-          </div>
-          <button type="submit" className="auth-btn">צור משתמש</button>
-        </form>
+  if (user.role !== 'admin' && user.user_type !== 'admin') return <div style={{ textAlign: 'center', marginTop: '50px' }}>אין הרשאה לפאנל זה</div>;
+return (
+  <div className="profile-page admin-users-page">
+
+    {/* ================= HEADER ================= */}
+
+    <div className="profile-header">
+
+      <div className="profile-avatar">
+        👥
       </div>
+
+      <div className="profile-header-info">
+
+        <h1 className="profile-username">
+          ניהול משתמשים
+        </h1>
+
+        <p className="profile-email">
+          צפייה, עריכה, מחיקה ויצירת משתמשים
+        </p>
+
+        <span className="profile-role-badge profile-role-badge--admin">
+          ADMIN DASHBOARD
+        </span>
+
+      </div>
+
     </div>
-  );
+
+    {error && (
+      <div className="profile-form-error">
+        {error}
+      </div>
+    )}
+
+    {loading ? (
+
+      <div className="profile-tab-loading">
+
+        <div className="profile-spinner"></div>
+
+        <p>טוען משתמשים...</p>
+
+      </div>
+
+    ) : (
+
+      <>
+
+        {/* ================= USERS ================= */}
+
+        <div className="admin-users-grid">
+
+          {users.map((u) => (
+
+            <div className="admin-user-card" key={u.id}>
+
+              <div className="admin-user-top">
+
+                <div className="profile-avatar">
+                  {u.username?.charAt(0).toUpperCase()}
+                </div>
+
+                <div>
+
+                  <h3>{u.username}</h3>
+
+                  <p>{u.email}</p>
+
+                </div>
+
+              </div>
+
+              <div className="admin-user-status">
+
+                {online.includes(u.id)
+                  ? "🟢 מחובר"
+                  : "⚪ לא מחובר"}
+
+              </div>
+
+              <div
+                style={{
+                  marginTop: "1rem",
+                  fontWeight: 800
+                }}
+              >
+
+                Role:
+
+                {editId === u.id ? (
+
+                  <select
+                    value={editFields.role}
+                    onChange={(e) =>
+                      setEditFields((s) => ({
+                        ...s,
+                        role: e.target.value
+                      }))
+                    }
+                  >
+
+                    <option value="user">
+                      User
+                    </option>
+
+                    <option value="admin">
+                      Admin
+                    </option>
+
+                  </select>
+
+                ) : (
+
+                  <span style={{ marginRight: 8 }}>
+                    {u.role}
+                  </span>
+
+                )}
+
+              </div>
+
+              <div
+                style={{
+                  marginTop: "1rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: ".75rem"
+                }}
+              >
+
+                {editId === u.id ? (
+
+                  <>
+
+                    <input
+                      value={editFields.username}
+                      onChange={(e) =>
+                        setEditFields((s) => ({
+                          ...s,
+                          username: e.target.value
+                        }))
+                      }
+                      placeholder="Username"
+                    />
+
+                    <input
+                      value={editFields.email}
+                      onChange={(e) =>
+                        setEditFields((s) => ({
+                          ...s,
+                          email: e.target.value
+                        }))
+                      }
+                      placeholder="Email"
+                    />
+
+                  </>
+
+                ) : null}
+
+              </div>
+
+              <div className="admin-user-actions">
+
+                {editId === u.id ? (
+
+                  <>
+
+                    <button
+                      onClick={() => saveEdit(u.id)}
+                    >
+                      💾 שמור
+                    </button>
+
+                    <button
+                      onClick={cancelEdit}
+                    >
+                      ↩ ביטול
+                    </button>
+
+                  </>
+
+                ) : (
+
+                  <>
+
+                    <button
+                      onClick={() => startEdit(u)}
+                    >
+                      ✏ ערוך
+                    </button>
+
+                    {user.id !== u.id && (
+
+                      <button
+                        className="danger"
+                        onClick={() =>
+                          handleDelete(u.id)
+                        }
+                      >
+                        🗑 מחק
+                      </button>
+
+                    )}
+
+                  </>
+
+                )}
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
+        {/* ================= CREATE USER ================= */}
+
+        <div
+          className="profile-edit-card"
+          style={{ marginTop: "3rem" }}
+        >
+
+          <h2 className="profile-edit-title">
+
+            ➕ יצירת משתמש חדש
+
+          </h2>
+
+          <form
+            className="profile-edit-form"
+            onSubmit={handleCreate}
+          >
+
+            <div className="profile-form-group">
+
+              <label>Username</label>
+
+              <input
+                value={createFields.username}
+                onChange={(e) =>
+                  setCreateFields((s) => ({
+                    ...s,
+                    username: e.target.value
+                  }))
+                }
+              />
+
+            </div>
+
+            <div className="profile-form-group">
+
+              <label>Email</label>
+
+              <input
+                type="email"
+                value={createFields.email}
+                onChange={(e) =>
+                  setCreateFields((s) => ({
+                    ...s,
+                    email: e.target.value
+                  }))
+                }
+              />
+
+            </div>
+
+            <div className="profile-form-group">
+
+              <label>Password</label>
+
+              <input
+                type="password"
+                value={createFields.password}
+                onChange={(e) =>
+                  setCreateFields((s) => ({
+                    ...s,
+                    password: e.target.value
+                  }))
+                }
+              />
+
+            </div>
+
+            <div className="profile-form-group">
+
+              <label>Role</label>
+
+              <select
+                value={createFields.role}
+                onChange={(e) =>
+                  setCreateFields((s) => ({
+                    ...s,
+                    role: e.target.value
+                  }))
+                }
+              >
+
+                <option value="user">
+                  User
+                </option>
+
+                <option value="admin">
+                  Admin
+                </option>
+
+              </select>
+
+            </div>
+
+            <div className="profile-edit-actions">
+
+              <button
+                type="submit"
+                className="profile-save-btn"
+              >
+                🚀 צור משתמש
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </>
+
+    )}
+
+  </div>
+);
 }

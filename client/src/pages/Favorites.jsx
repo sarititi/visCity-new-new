@@ -49,7 +49,7 @@ export default function Favorites() {
     return (
       <div className="favorites-page">
         <header className="favorites-header">
-          <h1>המועדפים שלי ❤️</h1>
+          <h1>המועדפים שלי <span className="fav-heart-emoji">❤️</span></h1>
           <p className="muted">שמרו טיולים שאהבתם וסדרו אותם בתיקיות משלכם</p>
         </header>
         <div className="fav-empty">
@@ -63,8 +63,20 @@ export default function Favorites() {
   return (
     <div className="favorites-page">
       <header className="favorites-header">
-        <h1>המועדפים שלי ❤️</h1>
+        <h1>המועדפים שלי <span className="fav-heart-emoji">❤️</span></h1>
         <p className="muted">לחצו על הלב בכל טיול כדי לשמור אותו כאן, וסדרו את הכל בתיקיות משלכם</p>
+        {favorites.length > 0 && (
+          <div className="favorites-stats">
+            <span className="favorites-stat favorites-stat--total">
+              <span aria-hidden="true">🧡</span>
+              <strong>{favorites.length}</strong> טיולים שמורים
+            </span>
+            <span className="favorites-stat favorites-stat--folders">
+              <span aria-hidden="true">📁</span>
+              <strong>{folders.length}</strong> תיקיות
+            </span>
+          </div>
+        )}
       </header>
 
       {loading ? (

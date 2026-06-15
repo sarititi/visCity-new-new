@@ -3,10 +3,18 @@ import FavoriteButton from './FavoriteButton';
 import StarRating from '../places/StarRating';
 
 const EMOJIS = ['🏖️', '⛰️', '🏛️', '🏕️', '🏜️', '🌲', '🏙️', '🏝️', '🛣️', '🗺️'];
+const RECENT_MS = 3 * 24 * 60 * 60 * 1000; // 3 ימים
 
 function thumbEmoji(name) {
   const idx = name ? name.charCodeAt(0) % EMOJIS.length : 0;
   return EMOJIS[idx];
+}
+
+function isRecentlyAdded(createdAt) {
+  if (!createdAt) return false;
+  const time = new Date(createdAt).getTime();
+  if (Number.isNaN(time)) return false;
+  return Date.now() - time < RECENT_MS;
 }
 
 /**
@@ -35,6 +43,10 @@ export default function FavoritePlaceCard({ item, folders, onMove }) {
         size="sm"
         className="favorite-btn--overlay"
       />
+
+      {isRecentlyAdded(item.createdAt) && (
+        <span className="fav-place-card__badge">✨ נוסף לאחרונה</span>
+      )}
 
       <Link to={`/places/${item.placeId}`} className="fav-place-card__media">
         {item.image_url ? (

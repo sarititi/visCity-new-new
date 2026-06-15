@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/userContext.jsx';
 import { loginUser } from '../../API/usersAPI';
 import '../../styles/auth.css';
+import '../../styles/profile.css';
+
 
 export default function AdminLogin() {
   const { login } = useContext(UserContext);
@@ -24,13 +26,11 @@ export default function AdminLogin() {
         return;
       }
 
-      // חסימת משתמשים רגילים מהתחברות דרך מסך המנהלים
-      if (data.user.user_type !== 'admin') {
+      if (data.user.role !== 'admin') {
         setError('שגיאה: אין לך הרשאות ניהול להתחברות זו.');
         return;
       }
 
-      // שמירת המנהל והעברה ישירה לדף ניהול המשתמשים
       login({ ...data.user, token: data.token });
       navigate('/admin/users');
     } catch {

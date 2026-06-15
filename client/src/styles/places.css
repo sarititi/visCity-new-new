@@ -555,6 +555,14 @@
   gap: 1rem;
 }
 
+.place-detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .place-detail-title {
   font-size: 1.9rem;
   font-weight: 900;
@@ -776,7 +784,7 @@
 }
 
 /* ── Wide Modal ──────────────────────────────────────────── */
-.modal-window--wide { max-width: 860px; }
+.modal-window--wide { max-width: 640px; }
 
 .modal-body--wide {
   display: grid;

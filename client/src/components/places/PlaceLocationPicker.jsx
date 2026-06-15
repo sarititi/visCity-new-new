@@ -1,50 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
 
-const DEFAULT_CENTER = { lat: 31.7683, lng: 35.2137 }; // ירושלים - מרכז ברירת מחדל
+const DEFAULT_CENTER = { lat: 31.7683, lng: 35.2137 };
 const LOAD_TIMEOUT_MS = 6000;
 
 export default function PlaceLocationPicker({ latitude, longitude, onChange }) {
   const inputRef = useRef(null);
   const mapRef = useRef(null);
+
   const mapInstance = useRef(null);
   const markerInstance = useRef(null);
-  const [ready, setReady] = useState(false);
-  const [mapsError, setMapsError] = useState(() => Boolean(window.__GMAPS_AUTH_FAILED__));
+  const autocompleteRef = useRef(null);
 
-  // מאזינים לכשל אימות/הרשאות גלובלי של Google Maps (לדוגמה: Billing not enabled)
+  const [ready, setReady] = useState(false);
+  const [mapsError, setMapsError] = useState(false);
+
+  // --- detect Google Maps load ---
   useEffect(() => {
     if (window.__GMAPS_AUTH_FAILED__) {
       setMapsError(true);
       return;
     }
-    const handleAuthFailure = () => setMapsError(true);
-    window.addEventListener('gmaps-auth-failure', handleAuthFailure);
-    return () => window.removeEventListener('gmaps-auth-failure', handleAuthFailure);
-  }, []);
-
-  // מחכים שסקריפט Google Maps + Places יסיים להיטען (עם טיים-אאוט להגנה)
-  useEffect(() => {
-    if (mapsError) return;
-
-    if (window.google?.maps?.places) {
-      setReady(true);
-      return;
-    }
 
     const interval = setInterval(() => {
-      if (window.__GMAPS_AUTH_FAILED__) {
-        clearInterval(interval);
-        setMapsError(true);
-        return;
-      }
       if (window.google?.maps?.places) {
         clearInterval(interval);
         setReady(true);
       }
     }, 200);
 
-    // אם גוגל מפות לא נטען בכלל בזמן סביר (חיבור חסום, מפתח לא תקין וכו') —
-    // לא נשאיר את הטופס "תקוע" בלי דרך להזין מיקום.
     const timeout = setTimeout(() => {
       clearInterval(interval);
       if (!window.google?.maps?.places) setMapsError(true);
@@ -54,86 +37,103 @@ export default function PlaceLocationPicker({ latitude, longitude, onChange }) {
       clearInterval(interval);
       clearTimeout(timeout);
     };
-  }, [mapsError]);
+  }, []);
 
+  // --- init map ONLY ONCE ---
   useEffect(() => {
     if (!ready || mapsError) return;
+    if (!mapRef.current || !inputRef.current) return;
+    if (mapInstance.current) return; // חשוב מאוד! מונע כפילות
 
-    const hasInitialPosition = latitude != null && longitude != null;
-    const initialPosition = hasInitialPosition
+    const hasPos = latitude != null && longitude != null;
+
+    const position = hasPos
       ? { lat: Number(latitude), lng: Number(longitude) }
       : DEFAULT_CENTER;
 
+    // MAP
     const map = new window.google.maps.Map(mapRef.current, {
-      center: initialPosition,
-      zoom: hasInitialPosition ? 14 : 7,
-      gestureHandling: 'cooperative', // כדי שגלילה בתוך המודאל לא "תיתפס" ע"י המפה
+      center: position,
+      zoom: hasPos ? 14 : 7,
+      gestureHandling: 'cooperative',
     });
+
     mapInstance.current = map;
 
+    // MARKER
     const marker = new window.google.maps.Marker({
-      position: initialPosition,
+      position,
       map,
       draggable: true,
     });
+
     markerInstance.current = marker;
 
     marker.addListener('dragend', () => {
       const pos = marker.getPosition();
-      onChange({ latitude: pos.lat(), longitude: pos.lng(), google_place_id: null });
+      onChange({
+        latitude: pos.lat(),
+        longitude: pos.lng(),
+        google_place_id: null,
+      });
     });
 
     map.addListener('click', (e) => {
       marker.setPosition(e.latLng);
-      onChange({ latitude: e.latLng.lat(), longitude: e.latLng.lng(), google_place_id: null });
+      onChange({
+        latitude: e.latLng.lat(),
+        longitude: e.latLng.lng(),
+        google_place_id: null,
+      });
     });
 
-    // שומרים אילו .pac-container קיימים כבר ב-body, כדי לזהות את החדש שייווצר
-    const existingPacContainers = new Set(document.querySelectorAll('.pac-container'));
+    // AUTOCOMPLETE (בלי DOM hacks)
+    const autocomplete = new window.google.maps.places.Autocomplete(
+      inputRef.current,
+      { fields: ['geometry', 'place_id', 'name'] }
+    );
 
-    const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-      fields: ['geometry', 'place_id', 'name'],
-    });
+    autocompleteRef.current = autocomplete;
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-      const location = place.geometry?.location;
-      if (!location) return;
+      const loc = place.geometry?.location;
+      if (!loc) return;
 
-      map.setCenter(location);
+      map.setCenter(loc);
       map.setZoom(15);
-      marker.setPosition(location);
+      marker.setPosition(loc);
 
       onChange({
-        latitude: location.lat(),
-        longitude: location.lng(),
+        latitude: loc.lat(),
+        longitude: loc.lng(),
         google_place_id: place.place_id || null,
       });
     });
 
-    // ה-Autocomplete מוסיף תפריט הצעות (.pac-container) ישירות ל-body
-    let pacContainer = null;
-    document.querySelectorAll('.pac-container').forEach((el) => {
-      if (!existingPacContainers.has(el)) pacContainer = el;
-    });
-
-    // ניקוי בעת unmount / רינדור חוזר (כדי שלא ייווצרו כמה מפות/Autocomplete כפולים)
     return () => {
-      window.google.maps.event.clearInstanceListeners(map);
-      window.google.maps.event.clearInstanceListeners(marker);
-      window.google.maps.event.clearInstanceListeners(autocomplete);
+      window.google?.maps?.event?.clearInstanceListeners(map);
+      window.google?.maps?.event?.clearInstanceListeners(marker);
+      window.google?.maps?.event?.clearInstanceListeners(autocomplete);
+
       marker.setMap(null);
-      pacContainer?.remove();
+
+      mapInstance.current = null;
+      markerInstance.current = null;
+      autocompleteRef.current = null;
     };
   }, [ready, mapsError]);
 
-  // כאשר המפה זזה ע"י לחיצה/גרירה, ה-marker וה-map מתעדכנים ישירות ע"י Google API
-  // (לא דרך re-render). כשעוברים למצב הזנה ידנית נשמור את אותה לוגיקה.
+  // --- update position without recreating map ---
   useEffect(() => {
     if (!mapInstance.current || !markerInstance.current) return;
     if (latitude == null || longitude == null) return;
 
-    const pos = { lat: Number(latitude), lng: Number(longitude) };
+    const pos = {
+      lat: Number(latitude),
+      lng: Number(longitude),
+    };
+
     markerInstance.current.setPosition(pos);
     mapInstance.current.setCenter(pos);
   }, [latitude, longitude]);
@@ -143,8 +143,8 @@ export default function PlaceLocationPicker({ latitude, longitude, onChange }) {
     if (value.trim() !== '' && Number.isNaN(num)) return;
 
     onChange({
-      latitude: field === 'latitude' ? num : (latitude != null ? Number(latitude) : null),
-      longitude: field === 'longitude' ? num : (longitude != null ? Number(longitude) : null),
+      latitude: field === 'latitude' ? num : latitude,
+      longitude: field === 'longitude' ? num : longitude,
       google_place_id: null,
     });
   };
@@ -155,10 +155,7 @@ export default function PlaceLocationPicker({ latitude, longitude, onChange }) {
 
       {mapsError ? (
         <div className="location-picker-fallback">
-          <p>
-            ⚠️ לא ניתן לטעון את Google Maps כרגע (יתכן ויש בעיה בהגדרות חיוב/מפתח ה-API).
-            אפשר להזין את המיקום ידנית באמצעות קואורדינטות:
-          </p>
+          ⚠️ לא ניתן לטעון Google Maps. ניתן להזין קואורדינטות ידנית.
         </div>
       ) : (
         <>
@@ -166,13 +163,14 @@ export default function PlaceLocationPicker({ latitude, longitude, onChange }) {
             ref={inputRef}
             type="text"
             className="form-input"
-            placeholder="חפשו כתובת או מקום בגוגל מפות..."
+            placeholder="חפשו מקום..."
           />
+
           <div
             ref={mapRef}
             style={{
               width: '100%',
-              height: '250px',
+              height: '180px',
               borderRadius: '12px',
               marginTop: '8px',
             }}
@@ -181,32 +179,27 @@ export default function PlaceLocationPicker({ latitude, longitude, onChange }) {
       )}
 
       <div className="location-manual-inputs">
-        <div className="location-manual-field">
-          <label className="form-label">קו רוחב (Latitude)</label>
-          <input
-            type="number"
-            step="any"
-            className="form-input"
-            placeholder="לדוגמה: 31.7683"
-            value={latitude ?? ''}
-            onChange={(e) => handleManualChange('latitude', e.target.value)}
-          />
-        </div>
-        <div className="location-manual-field">
-          <label className="form-label">קו אורך (Longitude)</label>
-          <input
-            type="number"
-            step="any"
-            className="form-input"
-            placeholder="לדוגמה: 35.2137"
-            value={longitude ?? ''}
-            onChange={(e) => handleManualChange('longitude', e.target.value)}
-          />
-        </div>
+        <input
+          type="number"
+          placeholder="Latitude"
+          value={latitude ?? ''}
+          onChange={(e) =>
+            handleManualChange('latitude', e.target.value)
+          }
+        />
+
+        <input
+          type="number"
+          placeholder="Longitude"
+          value={longitude ?? ''}
+          onChange={(e) =>
+            handleManualChange('longitude', e.target.value)
+          }
+        />
       </div>
 
       {latitude != null && longitude != null && (
-        <small style={{ color: 'var(--places-text-muted)' }}>
+        <small>
           📍 {Number(latitude).toFixed(5)}, {Number(longitude).toFixed(5)}
         </small>
       )}

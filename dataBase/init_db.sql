@@ -81,5 +81,17 @@ INSERT INTO review_helpful (review_id, user_id, vote) VALUES
 INSERT INTO media (media_id, place_id, user_id, media_type, media_url) VALUES
 (1, 3, 2, 'image', 'http://localhost:3000/uploads/rosh-hanikra1.jpg'),
 (2, 3, 2, 'image', 'http://localhost:3000/uploads/rosh_hanikra_2.jpg'),
-(3, 3, 2, 'image', 'http://localhost:3000/uploads/rosh_hanikra_3.jpg');
--- (4, 7, 4, 'video', '/uploads/dan-nature.jpg'); -- סרטון וידאו לדוגמה למכתש
+(3, 3, 2, 'image', 'http://localhost:3000/uploads/rosh_hanikra_3.jpg'),
+(4, 5, 3, 'image', 'http://localhost:3000/uploads/park_hayarkon_1.jpg'),
+(5, 5, 3, 'image', 'http://localhost:3000/uploads/park_hayarkon_2.jpg'),
+(6, 7, 2, 'image', 'http://localhost:3000/uploads/ramon_crater_1.jpg'),
+(7, 7, 2, 'image', 'http://localhost:3000/uploads/ramon_crater_2.jpg'),
+(8, 7, 2, 'image', 'http://localhost:3000/uploads/ramon_crater_3.jpg'),
+(9, 6, 1, 'image', 'http://localhost:3000/uploads/ein_gedy_1.jpg'),
+(10, 10, 2, 'image', 'http://localhost:3000/uploads/Fish_in_eilat_underwater_observatory_1.jpg'),
+(11, 10, 2, 'image', 'http://localhost:3000/uploads/Fish_in_eilat_underwater_observatory_2.jpg'),
+(12, 6, 1, 'image', 'http://localhost:3000/uploads/ein_gedy_2.jpg'),
+(13, 9, 4, 'image', 'http://localhost:3000/uploads/the_red_canyon.jpg'),
+(14, 4, 2, 'image', 'http://localhost:3000/uploads/carmel_park.jpg'),
+(15, 2, 1, 'image', 'http://localhost:3000/uploads/hula_lake_gruidae.jpg'),
+(16, 8, 1, 'image', 'http://localhost:3000/uploads/Timna_Park.jpg');

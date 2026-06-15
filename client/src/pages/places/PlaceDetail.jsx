@@ -18,19 +18,20 @@ export default function PlaceDetail() {
   const [error, setError] = useState(null);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
-  useEffect(() => {
-    async function fetchPlaceData() {
-      try {
-        setLoading(true);
-        // שימוש בפונקציה מקובץ ה-API שמפנה ל-localhost:3000
-        const data = await getPlaceById(id);
-        setPlace(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+  const fetchPlaceData = async () => {
+    try {
+      setLoading(true);
+      // שימוש בפונקציה מקובץ ה-API שמפנה ל-localhost:3000
+      const data = await getPlaceById(id);
+      setPlace(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     if (id) fetchPlaceData();
   }, [id]);
 
@@ -46,7 +47,11 @@ export default function PlaceDetail() {
 
       <div className="place-detail-layout">
         {/* חלק 1: פרטי המקום הבסיסיים */}
-        <PlaceInfo place={place} />
+        <PlaceInfo
+          place={place}
+          onPlaceDeleted={() => navigate('/places')}
+          onPlaceUpdated={fetchPlaceData}
+        />
 
         <PlaceMap
           lat={place.latitude}

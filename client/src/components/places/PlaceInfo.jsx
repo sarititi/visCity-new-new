@@ -1,8 +1,9 @@
 import StarRating from './StarRating';
 import FavoriteButton from '../favorites/FavoriteButton';
+import PlaceOwnerActions from './PlaceOwnerActions';
 import '../../styles/places.css';
 
-export default function PlaceInfo({ place }) {
+export default function PlaceInfo({ place, onPlaceDeleted, onPlaceUpdated }) {
   const {
     name,
     description,
@@ -25,7 +26,14 @@ export default function PlaceInfo({ place }) {
       <div className="place-info-section-body">
         <div className="place-detail-header">
           <h1 className="place-detail-title">{name}</h1>
-          <FavoriteButton place={place} size="lg" />
+          <div className="place-detail-header-actions">
+            <FavoriteButton place={place} size="lg" />
+            <PlaceOwnerActions
+              place={place}
+              onDeleted={onPlaceDeleted}
+              onUpdated={onPlaceUpdated}
+            />
+          </div>
         </div>
 
         <StarRating rating={avg_rating} count={review_count} size="lg" />
