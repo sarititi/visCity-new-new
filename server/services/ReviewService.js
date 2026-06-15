@@ -10,6 +10,10 @@ import {
 } from '../models/ReviewModel.js';
 import { REVIEW_NOT_FOUND, INVALID_RATING, DELETE_FAILED, CANNOT_VOTE_OWN_REVIEW, REVIEW_ALREADY_STARRED } from '../const/errorConst.js';
 
+export const getReviewForAuthorization = async (id) => {
+    return await getReviewById(id);
+};
+
 export const addReview = async (userId, placeId, rating, comment) => {
     // rating may be null/undefined → comment-only allowed
     if (rating !== undefined && rating !== null) {
@@ -44,7 +48,7 @@ export const getUserReviews = async (userId) => {
 };
 
 export const editReview = async (reviewId, rating, comment) => {
-    const review = await getReviewById(reviewId);
+    const review = await getReviewForAuthorization(reviewId);
     if (!review) {
         const error = new Error(REVIEW_NOT_FOUND.message);
         error.status = REVIEW_NOT_FOUND.status;
@@ -80,7 +84,7 @@ export const editReview = async (reviewId, rating, comment) => {
 };
 
 export const removeReview = async (reviewId) => {
-    const review = await getReviewById(reviewId);
+    const review = await getReviewForAuthorization(reviewId);
     if (!review) {
         const error = new Error(REVIEW_NOT_FOUND.message);
         error.status = REVIEW_NOT_FOUND.status;
@@ -98,7 +102,7 @@ export const removeReview = async (reviewId) => {
 };
 
 export const helpfulVote = async (reviewId, userId, vote) => {
-    const review = await getReviewById(reviewId);
+    const review = await getReviewForAuthorization(reviewId);
     if (!review) {
         const error = new Error(REVIEW_NOT_FOUND.message);
         error.status = REVIEW_NOT_FOUND.status;

@@ -1,12 +1,17 @@
 import { createPlace, fetchPlaces, getPlaceById, updatePlace, deletePlace } from '../models/PlaceModel.js';
 import { NAME_CATEGORY_REQUIRED, PLACE_NOT_FOUND, PLACE_UPDATE_FAILED, INTERNAL_SERVER_ERROR } from '../const/errorConst.js';
 
+
 const MAX_LIMIT     = 50;
 const DEFAULT_LIMIT = 50;
 
 export const validateCategories = (categories) => {
     if (!Array.isArray(categories)) return false;
     return categories.every(c => typeof c === 'string' && c.trim().length > 0);
+};
+
+export const getPlaceForAuthorization = async (id) => {
+    return await getPlaceById(id);
 };
 
 export const addPlace = async (userId, name, description, categories, latitude, longitude, googlePlaceId, openingHours) => {
@@ -27,7 +32,7 @@ export const addPlace = async (userId, name, description, categories, latitude, 
 };
 
 export const getPlace = async (placeId) => {
-    const place = await getPlaceById(placeId);
+    const place = await getPlaceForAuthorization(placeId);
     if (!place) {
         const error = new Error(PLACE_NOT_FOUND.message);
         error.status = PLACE_NOT_FOUND.status;
@@ -104,3 +109,4 @@ export const getPlaces = async ({ page = 1, limit = DEFAULT_LIMIT, search = '', 
         totalPages: Math.ceil(total / safeLimit),
     };
 };
+
